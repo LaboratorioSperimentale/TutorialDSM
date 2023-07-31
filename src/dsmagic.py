@@ -113,6 +113,13 @@ def filter_by_POS(sorted_freqs, poslist, position=1):
             ret.append((token, freq))
     return ret
 
+def filter_by_threshold(sorted_freqs, min_freq=0):
+    ret = []
+    for token, freq in sorted_freqs:
+        if freq > min_freq:
+            ret.append((token, freq))
+    return ret
+
 def load_from_file(filename, sep="\t"):
 
     ret = {}
