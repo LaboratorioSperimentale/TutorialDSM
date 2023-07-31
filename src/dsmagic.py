@@ -106,6 +106,13 @@ def compute_frequencies (filename, token_shape=["form", "lemma", "pos"]):
   return list(sorted_freqs)
 
 
+def filter_by_POS(sorted_freqs, poslist, position=1):
+    ret = []
+    for token, freq in sorted_freqs:
+        if token[position] in poslist:
+            ret.append((token, freq))
+    return ret
+
 def load_from_file(filename, sep="\t"):
 
     ret = {}
