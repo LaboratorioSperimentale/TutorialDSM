@@ -128,7 +128,7 @@ def load_from_file(filename, sep="\t"):
         for line in fin:
             line = line.strip().split(sep)
 
-            ret[line[0]] = int(line[1])
+            ret[tuple(line[:-1])] = float(line[-1])
 
     return ret
 
