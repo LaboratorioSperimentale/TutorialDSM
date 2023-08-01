@@ -133,7 +133,7 @@ def load_from_file(filename, sep="\t"):
     return ret
 
 
-def load_sparse_matrix(filename, nrows, ncols, sep="\t"):
+def load_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
 
     rows = []
     columns = []
@@ -141,20 +141,30 @@ def load_sparse_matrix(filename, nrows, ncols, sep="\t"):
 
     targets_dict = {}
     contexts_dict = {}
+    
+    len_token_rep = len(token_shape)
 
     with open(filename) as fin:
         for line in fin:
-            linestrip = line.strip().split(sep)
-            row_id, row_name, column_id, column_name, w = linestrip
-            row_id, column_id = int(row_id), int(column_id)
-            w = float(w)
-
+            linesplit = line.strip().split(sep)
+            
+            weight = float(linesplit[-1])
+            
+            row = linesplit[:len_token_rep+1]
+            column = linesplit[len_token_rep+1:-1]
+            
+            row_id = row[0]
+            column_id = column[0]
+            
+            row_token = tuple(row[1:])
+            column_token = tuple(column[1:])          
+            
             rows.append(row_id)
             columns.append(column_id)
-            data.append(w)
+            data.append(weight)
 
-            targets_dict[row_name] = row_id
-            contexts_dict[column_name] = column_id
+            targets_dict[row_token] = row_id
+            contexts_dict[column_token] = column_id
 
     ret = sp.sparse.csr_matrix(
         (data, (rows, columns)), shape=(nrows, ncols), dtype=np.float32)
