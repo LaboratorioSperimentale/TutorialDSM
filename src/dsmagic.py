@@ -184,3 +184,20 @@ def write_to_file(filepath, matrix, id_dict):
             token_str = "\t".join(sorted_dict[row_id][0])
             vector_str = "\t".join(str(x) for x in row)
             print(f"{token_str}\t{vector_str}", file=fout)
+            
+
+def get_nearest_neighbors(matrix, id_dict, topk=10):
+    
+    ret = {}
+    sorted_dict = sorted(id_dict.items(), key=lambda x: x[1])
+    sorted_dict = [x[0] for x in sorted_dict]
+    
+    for row_id, row in enumerate(matrix):
+
+        row_with_labels = zip (row, sorted_dict)
+        sorted_row = sorted(row_with_labels, reverse=True)
+        
+        ret[sorted_dict[row_id]] = sorted_row[:topk]
+        
+    return ret
+        
