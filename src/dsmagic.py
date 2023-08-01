@@ -153,8 +153,8 @@ def load_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
             row = linesplit[:len_token_rep+1]
             column = linesplit[len_token_rep+1:-1]
             
-            row_id = row[0]
-            column_id = column[0]
+            row_id = int(row[0])
+            column_id = int(column[0])
             
             row_token = tuple(row[1:])
             column_token = tuple(column[1:])          
@@ -173,3 +173,14 @@ def load_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
 
 def cosine(vector_1, vector2):
     return cosine_similarity(vector_1, vector2)[0][0]
+
+
+def write_to_file(filepath, matrix, id_dict):
+    
+    sorted_dict = sorted(id_dict.items(), key=lambda x: x[1])
+    
+    with open(filepath, "w") as fout:
+        for row_id, row in enumerate(matrix):
+            token_str = "\t".join(sorted_dict[row_id][0])
+            vector_str = "\t".join(str(x) for x in row)
+            print(f"{token_str}\t{vector_str}", file=fout)
