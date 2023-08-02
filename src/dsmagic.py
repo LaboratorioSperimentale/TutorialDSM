@@ -68,7 +68,7 @@ def corpus_to_sentences(filename, token_shape=("form", "lemma", "pos")):
 
 
 @mk_reusable
-def corpus_to_sentences_w2v(filename):
+def corpus_to_sentences_w2v(filename, token_shape=("form", "lemma", "pos")):
 
     with open(filename) as fin:
         sentence = []
@@ -81,11 +81,21 @@ def corpus_to_sentences_w2v(filename):
                 if len(line):
 
                     linesplit = line.split("\t")
+                    CoNLL_columns = ["s_id", "form", "lemma",
+                                     "pos", "pos_fgrained",
+                                     "morph",
+                                     "synhead", "synrel",
+                                     "_", "_", "mwe", "mwe2"]
 
-                    s_id, form, lemma, pos, *IGNORED = linesplit
+                    full_token = dict(zip(CoNLL_columns, linesplit))
+                    token = tuple(full_token[col_name]
+                                  for col_name in token_shape)
+                    
+                    token_str = "/".join(token)
+                    sentence.append(token_str)
 
-                    if not pos == "F":
-                        sentence.append(f"{lemma}/{pos}")
+                    # if not pos == "F":
+                    #     sentence.append(token_str)
 
                 else:
                     yield sentence
