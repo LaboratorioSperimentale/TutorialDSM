@@ -5,6 +5,7 @@ Set of utilities for Tutorial on Distributional Semantic Models
 import collections
 import numpy as np
 import scipy as sp
+import math
 
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -133,7 +134,7 @@ def load_from_file(filename, sep="\t"):
     return ret
 
 
-def load_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
+def build_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
 
     rows = []
     columns = []
@@ -200,4 +201,56 @@ def get_nearest_neighbors(matrix, id_dict, topk=10):
         ret[sorted_dict[row_id]] = sorted_row[:topk]
         
     return ret
+
+
+def extract_cooccurrences(filepath, token_shape, targets, contexts, window_size):
+
+    co_occ = collections.defaultdict(lambda: collections.defaultdict(int))
+    
+    for sentence in corpus_to_sentences(filepath, token_shape):
+
+        for token_id, token in enumerate(sentence):
+
+            if token in targets:
+
+                # build left and right window boundary
+                # _ _ _ [_ _ _ _ _ X _ _ _ _ _] _ _ _
+                left_boundary = max(0, token_id-window_size)
+                right_boundary = min(len(sentence)-1, token_id+window_size)
+                window = sentence[left_boundary:right_boundary+1]
+
+                target_pos = token_id - left_boundary
+
+                # check contexts in left window
+                for ctx in window[0:target_pos]:
+                    if ctx in contexts:
+                        co_occ[token][ctx]+=1
+
+                # check contexts in right window
+                for ctx in window[target_pos+1:]:
+                    if ctx in contexts:
+                        co_occ[token][ctx]+=1
+                
+    return co_occ
+
+
+def apply_ppmi(co_occurrences, targets_frequencies_dict, contexts_frequencies_dict, corpus_size):
+
+    weighted_coocc = collections.defaultdict(lambda: collections.defaultdict(int))
+
+    for target_id, target in enumerate(targets_frequencies_dict):
+        target_frequency = targets_frequencies_dict[target]
+        p_target = target_frequency/corpus_size
+
+        for context_id, context in enumerate(contexts_frequencies_dict):
+            context_frequency = contexts_frequencies_dict[context]
+            p_context = context_frequency/corpus_size
+
+            coocc_frequency = co_occurrences[target][context]
+            p_coocc = coocc_frequency/corpus_size
+
+            if p_coocc > 0:
+                pmi = math.log(p_coocc/(p_target*p_context), 2)
+                weighted_coocc[target][context] = max(0, pmi)
         
+    return weighted_coocc
