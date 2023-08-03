@@ -7,12 +7,19 @@ import numpy as np
 import scipy as sp
 import math
 
-from sklearn.metrics.pairwise import cosine_similarity
+from typing import Callable, Iterable, Generator, Tuple, Any, List, Set, Dict, Union
 
 
-def mk_reusable(fun):
+def mk_reusable(fun: Callable) -> Generator[Any, None, None]:
     """
     Makes a reusable iterable out of generator by remembering its arguments
+
+    Args:
+        fun (Callable): _description_
+
+    Returns:
+        Generator[Any, None, None]: _description_
+        
     """
     class MyIterable:
         def __init__(self, *args, **kwargs):
@@ -26,16 +33,27 @@ def mk_reusable(fun):
 
 
 @mk_reusable
-def corpus_to_sentences(filename, token_shape=("form", "lemma", "pos")):
+def corpus_to_sentences(filename: str, 
+                        token_shape: Tuple[str, ...] = ("form", "lemma", "pos") 
+                        ) -> Generator[Iterable, None, None]:
     """
     The function turns corpus into sentences containing only the required info.
     How do we choose how much info we want to keep? One of the parameters of the
     function controls that for us.
-    Possible values for 'token_shape' are:
-    "s_id", "form", "lemma", "pos", "pos_fgrained",
-    "morph", "synhead", "synrel",
-    "_", "_", "mwe", "mwe2"
+
+    Args:
+        filename (str): path to file containing parsed corpus in CoNLL format
+        token_shape (Tuple[str,...], optional):tuple containing the info that we want to retain for each token.
+            Possible values for 'token_shape' are:
+            "s_id", "form", "lemma", "pos", "pos_fgrained",
+            "morph", "synhead", "synrel",
+            "_", "_", "mwe", "mwe2" 
+            Defaults to ("form", "lemma", "pos").
+
+    Yields:
+        Generator[Iterable, None, None]: Sentences containin tokens represented as token_shape
     """
+
 
     with open(filename, encoding="utf-8") as fin:
         sentence = []
@@ -54,6 +72,7 @@ def corpus_to_sentences(filename, token_shape=("form", "lemma", "pos")):
                                      "morph",
                                      "synhead", "synrel",
                                      "_", "_", "mwe", "mwe2"]
+                    
                     full_token = dict(zip(CoNLL_columns, linesplit))
                     token = tuple(full_token[col_name]
                                   for col_name in token_shape)
@@ -68,12 +87,33 @@ def corpus_to_sentences(filename, token_shape=("form", "lemma", "pos")):
 
 
 @mk_reusable
-def corpus_to_sentences_w2v(filename, token_shape=("form", "lemma", "pos")):
+def corpus_to_sentences_w2v(filename: str, 
+                            token_shape: Tuple[str, ...] = ("form", "lemma", "pos")
+                            ) -> Generator[Iterable[str], None, None]:
+    """
+    The function turns corpus into sentences containing only the required info.
+    
+    Similar to "corpus_to_sentences", but tokens are represented as strings
+    rather than tuples, in order to work as input for the gensim library
 
-    with open(filename) as fin:
+
+    Args:
+        filename (str): path to file containing parsed corpus in CoNLL format
+        token_shape (Tuple[str, ...], optional): tuple containing the info that we want to retain for each token.
+            Possible values for 'token_shape' are:
+            "s_id", "form", "lemma", "pos", "pos_fgrained",
+            "morph", "synhead", "synrel",
+            "_", "_", "mwe", "mwe2" 
+            Defaults to ("form", "lemma", "pos").
+
+    Yields:
+        Generator[Iterable[str], None, None]: Sentences containin tokens represented as strings
+    """
+
+    with open(filename, encoding="utf-8") as fin:
         sentence = []
 
-        for line_n, line in enumerate(fin):
+        for _, line in enumerate(fin):
 
             if not line.startswith("<"):
                 line = line.strip()
@@ -94,9 +134,6 @@ def corpus_to_sentences_w2v(filename, token_shape=("form", "lemma", "pos")):
                     token_str = "/".join(token)
                     sentence.append(token_str)
 
-                    # if not pos == "F":
-                    #     sentence.append(token_str)
-
                 else:
                     yield sentence
                     sentence = []
@@ -104,38 +141,97 @@ def corpus_to_sentences_w2v(filename, token_shape=("form", "lemma", "pos")):
         yield sentence
 
 
-def compute_frequencies (filename, token_shape=["form", "lemma", "pos"]):
+def compute_frequencies (filename: str, 
+                         token_shape: Tuple[str, ...] = ("form", "lemma", "pos")
+                         ) -> List[Tuple[Tuple[str,...], int]]:
+    """
+    Given a corpus, the function computes the list of frequencies of its token, sorted in decreasing order
 
-  freqDict = collections.defaultdict(int)
+    Args:
+        filename (str): path to file containing parsed corpus in CoNLL format
+        token_shape (Tuple[str, ...], optional): tuple containing the info that we want to retain for each token.
+                                                Possible values for 'token_shape' are:
+                                                "s_id", "form", "lemma", "pos", "pos_fgrained",
+                                                "morph", "synhead", "synrel",
+                                                "_", "_", "mwe", "mwe2" 
+                                                Defaults to ("form", "lemma", "pos").
 
-  for sentence in corpus_to_sentences(filename, token_shape):
+    Returns:
+        List[Tuple[Tuple[str,...], int]]: List of sorted frequencies
+    """
 
-    for token in sentence:
-      freqDict[token] += 1
+    freqDict = collections.defaultdict(int)
 
-  sorted_freqs = sorted(freqDict.items(), key= lambda x: (-x[1], x[0]))
-  return list(sorted_freqs)
+    for sentence in corpus_to_sentences(filename, token_shape):
+
+        for token in sentence:
+            freqDict[token] += 1
+
+    sorted_freqs = sorted(freqDict.items(), key= lambda x: (-x[1], x[0]))
+    
+    return list(sorted_freqs)
 
 
-def filter_by_POS(sorted_freqs, poslist, position=1):
+def filter_by_POS(sorted_freqs: List[Tuple[Tuple[str,...], int]], 
+                  poslist: Union[List, Set, Dict], 
+                  position: int = 1 
+                  ) -> List[Tuple[Tuple[str,...], int]]:
+    """_summary_
+
+    Args:
+        sorted_freqs (List[Tuple[Tuple[str,...], int]]): _description_
+        poslist (Union[List, Set, Dict]): _description_
+        position (int, optional): _description_. Defaults to 1.
+
+    Returns:
+        List[Tuple[Tuple[str,...], int]]: _description_
+    """
+    
     ret = []
     for token, freq in sorted_freqs:
         if token[position] in poslist:
             ret.append((token, freq))
+            
     return ret
 
-def filter_by_threshold(sorted_freqs, min_freq=0):
+
+def filter_by_threshold(sorted_freqs: List[Tuple[Tuple[str,...], int]], 
+                        min_freq: int = 0
+                        ) -> List[Tuple[Tuple[str,...], int]]:
+    """_summary_
+
+    Args:
+        sorted_freqs (List[Tuple[Tuple[str,...], int]]): _description_
+        min_freq (int, optional): _description_. Defaults to 0.
+
+    Returns:
+        List[Tuple[Tuple[str,...], int]]: _description_
+    """
+    
     ret = []
     for token, freq in sorted_freqs:
         if freq > min_freq:
             ret.append((token, freq))
+    
     return ret
 
-def load_from_file(filename, sep="\t"):
+
+def load_from_file(filename: str, 
+                   sep: str = "\t"
+                   ) -> Dict[Tuple[str, ...], float]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+        sep (str, optional): _description_. Defaults to "\t".
+
+    Returns:
+        Dict[Tuple[str, ...], float]: _description_
+    """
 
     ret = {}
 
-    with open(filename) as fin:
+    with open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split(sep)
 
@@ -144,7 +240,24 @@ def load_from_file(filename, sep="\t"):
     return ret
 
 
-def build_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
+def build_sparse_matrix(filename: str, 
+                        token_shape: Tuple[str, ...], 
+                        nrows: int, 
+                        ncols: int, 
+                        sep: str = "\t"
+                        ) -> sp.sparse.spmatrix:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+        token_shape (Tuple[str, ...]): _description_
+        nrows (int): _description_
+        ncols (int): _description_
+        sep (str, optional): _description_. Defaults to "\t".
+
+    Returns:
+        sp.sparse.spmatrix: _description_
+    """
 
     rows = []
     columns = []
@@ -155,7 +268,7 @@ def build_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
     
     len_token_rep = len(token_shape)
 
-    with open(filename) as fin:
+    with open(filename, encoding="utf-8") as fin:
         for line in fin:
             linesplit = line.strip().split(sep)
             
@@ -182,22 +295,41 @@ def build_sparse_matrix(filename, token_shape, nrows, ncols, sep="\t"):
     return ret, targets_dict, contexts_dict
 
 
-def cosine(vector_1, vector2):
-    return cosine_similarity(vector_1, vector2)[0][0]
+def write_to_file(filepath: str, 
+                  matrix: Iterable[Iterable[Union[int, float]]], 
+                  id_dict: Dict[Tuple[str, ...], int]
+                  ) -> None:
+    """_summary_
 
-
-def write_to_file(filepath, matrix, id_dict):
+    Args:
+        filepath (str): _description_
+        matrix (Iterable[Iterable[int  |  float]]): _description_
+        id_dict (Dict[Tuple[str, ...], int]): _description_
+    """
     
     sorted_dict = sorted(id_dict.items(), key=lambda x: x[1])
     
-    with open(filepath, "w") as fout:
+    with open(filepath, "w", encoding="utf-8") as fout:
         for row_id, row in enumerate(matrix):
             token_str = "\t".join(sorted_dict[row_id][0])
             vector_str = "\t".join(str(x) for x in row)
             print(f"{token_str}\t{vector_str}", file=fout)
             
 
-def get_nearest_neighbors(matrix, id_dict, topk=10):
+def get_nearest_neighbors(matrix: Iterable[Iterable[Union[int, float]]], 
+                          id_dict: Dict[Tuple[str, ...], int], 
+                          topk: int = 10
+                          ) -> Dict[Tuple[str, ...], List[Tuple[Tuple[str, ...], float]]]:
+    """_summary_
+
+    Args:
+        matrix (Iterable[Iterable[Union[int, float]]]): _description_
+        id_dict (Dict[Tuple[str, ...], int]): _description_
+        topk (int, optional): _description_. Defaults to 10.
+
+    Returns:
+        Dict[Tuple[str, ...], List[Tuple[Tuple[str, ...], float]]]: _description_
+    """
     
     ret = {}
     sorted_dict = sorted(id_dict.items(), key=lambda x: x[1])
@@ -213,7 +345,24 @@ def get_nearest_neighbors(matrix, id_dict, topk=10):
     return ret
 
 
-def extract_cooccurrences(filepath, token_shape, targets, contexts, window_size):
+def extract_cooccurrences(filepath: str, 
+                          token_shape: Tuple[str, ...], 
+                          targets: Union[Dict, Set, List], 
+                          contexts: Union[Dict, Set, List], 
+                          window_size: int = 5
+                          ) -> Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]:
+    """_summary_
+
+    Args:
+        filepath (str): _description_
+        token_shape (Tuple[str, ...]): _description_
+        targets (Union[Dict, Set, List]): _description_
+        contexts (Union[Dict, Set, List]): _description_
+        window_size (int, optional): _description_. Defaults to 5.
+
+    Returns:
+        Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]: _description_
+    """
 
     co_occ = collections.defaultdict(lambda: collections.defaultdict(int))
     
@@ -244,15 +393,30 @@ def extract_cooccurrences(filepath, token_shape, targets, contexts, window_size)
     return co_occ
 
 
-def apply_ppmi(co_occurrences, targets_frequencies_dict, contexts_frequencies_dict, corpus_size):
+def apply_ppmi(co_occurrences: Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]], 
+               targets_frequencies_dict: Dict[Tuple[str, ...], int], 
+               contexts_frequencies_dict: Dict[Tuple[str, ...], int], 
+               corpus_size: int
+               ) -> Dict[Tuple[str, ...], Dict[Tuple[str, ...], float]]:
+    """_summary_
+
+    Args:
+        co_occurrences (Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]): _description_
+        targets_frequencies_dict (Dict[Tuple[str, ...], int]): _description_
+        contexts_frequencies_dict (Dict[Tuple[str, ...], int]): _description_
+        corpus_size (int): _description_
+
+    Returns:
+        Dict[Tuple[str, ...], Dict[Tuple[str, ...], float]]: _description_
+    """
 
     weighted_coocc = collections.defaultdict(lambda: collections.defaultdict(int))
 
-    for target_id, target in enumerate(targets_frequencies_dict):
+    for target in targets_frequencies_dict:
         target_frequency = targets_frequencies_dict[target]
         p_target = target_frequency/corpus_size
 
-        for context_id, context in enumerate(contexts_frequencies_dict):
+        for context in contexts_frequencies_dict:
             context_frequency = contexts_frequencies_dict[context]
             p_context = context_frequency/corpus_size
 
