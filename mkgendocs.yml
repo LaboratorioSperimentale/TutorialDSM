@@ -1,0 +1,19 @@
+sources_dir: docs
+repo: https://github.com/LaboratorioSperimentale/TutorialDSM  #link to sources on github
+version: main                                                 #link to sources on github
+
+pages:
+  - page: "readme.md"
+    source: "src/dsmagic.py"
+    functions:
+      - corpus_to_sentences
+      - corpus_to_sentences_w2v
+      - compute_frequencies
+      - filter_by_POS
+      - filter_by_threshold
+      - load_from_file
+      - build_sparse_matrix
+      - write_to_file
+      - get_nearest_neighbors
+      - extract_cooccurrences
+      - apply_ppmi

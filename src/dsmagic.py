@@ -172,19 +172,20 @@ def compute_frequencies (filename: str,
     return list(sorted_freqs)
 
 
-def filter_by_POS(sorted_freqs: List[Tuple[Tuple[str,...], int]], 
-                  poslist: Union[List, Set, Dict], 
+def filter_by_POS(sorted_freqs: List[Tuple[Tuple[str,...], Any]], 
+                  poslist: Union[List[str], Set[str], Dict[str, Any]], 
                   position: int = 1 
-                  ) -> List[Tuple[Tuple[str,...], int]]:
-    """_summary_
+                  ) -> List[Tuple[Tuple[str,...], Any]]:
+    """
+    Filters list of tokens only keeping those with accepted Parts of Speech
 
     Args:
-        sorted_freqs (List[Tuple[Tuple[str,...], int]]): _description_
-        poslist (Union[List, Set, Dict]): _description_
-        position (int, optional): _description_. Defaults to 1.
+        sorted_freqs (List[Tuple[Tuple[str,...], Any]]): List of tokens in some representation format
+        poslist (Union[List[str], Set[str], Dict[str, Any]]): List of accepted Parts of Speech
+        position (int, optional): Offset of Part of Speech info in token representation. Defaults to 1.
 
     Returns:
-        List[Tuple[Tuple[str,...], int]]: _description_
+        List[Tuple[Tuple[str,...], Any]]: Same list as sorted_freqs but filtered
     """
     
     ret = []
@@ -198,14 +199,15 @@ def filter_by_POS(sorted_freqs: List[Tuple[Tuple[str,...], int]],
 def filter_by_threshold(sorted_freqs: List[Tuple[Tuple[str,...], int]], 
                         min_freq: int = 0
                         ) -> List[Tuple[Tuple[str,...], int]]:
-    """_summary_
+    """
+    Filters list of tokens by minimum frequency
 
     Args:
-        sorted_freqs (List[Tuple[Tuple[str,...], int]]): _description_
-        min_freq (int, optional): _description_. Defaults to 0.
+        sorted_freqs (List[Tuple[Tuple[str,...], int]]): List of tokens in some representation format with their frequency
+        min_freq (int, optional): Frequency threshold used for filtering. Defaults to 0.
 
     Returns:
-        List[Tuple[Tuple[str,...], int]]: _description_
+        List[Tuple[Tuple[str,...], int]]: Same list as sorted_freqs but filtered
     """
     
     ret = []
@@ -219,14 +221,15 @@ def filter_by_threshold(sorted_freqs: List[Tuple[Tuple[str,...], int]],
 def load_from_file(filename: str, 
                    sep: str = "\t"
                    ) -> Dict[Tuple[str, ...], float]:
-    """_summary_
+    """
+    Load tokens from file with their frequencies
 
     Args:
-        filename (str): _description_
-        sep (str, optional): _description_. Defaults to "\t".
+        filename (str): path to file containing list of tokens
+        sep (str, optional): separator used to parse file into tokens. Defaults to '\t'.
 
     Returns:
-        Dict[Tuple[str, ...], float]: _description_
+        Dict[Tuple[str, ...], float]: Dictionary with tokens as keys and frequencies as values
     """
 
     ret = {}
@@ -249,14 +252,14 @@ def build_sparse_matrix(filename: str,
     """_summary_
 
     Args:
-        filename (str): _description_
-        token_shape (Tuple[str, ...]): _description_
-        nrows (int): _description_
-        ncols (int): _description_
-        sep (str, optional): _description_. Defaults to "\t".
+        filename (str): path to file containing matrix entries
+        token_shape (Tuple[str, ...]): token representation used to load tokens from file
+        nrows (int): number of rows
+        ncols (int): number of columns
+        sep (str, optional): separator used to parse file into tokens. Defaults to '\t'.
 
     Returns:
-        sp.sparse.spmatrix: _description_
+        sp.sparse.spmatrix: scipy sparse matrix in csr format
     """
 
     rows = []
@@ -299,12 +302,13 @@ def write_to_file(filepath: str,
                   matrix: Iterable[Iterable[Union[int, float]]], 
                   id_dict: Dict[Tuple[str, ...], int]
                   ) -> None:
-    """_summary_
+    """
+    Serialize vectors to file
 
     Args:
-        filepath (str): _description_
-        matrix (Iterable[Iterable[int  |  float]]): _description_
-        id_dict (Dict[Tuple[str, ...], int]): _description_
+        filepath (str): path to location where file has to be created
+        matrix (Iterable[Iterable[int  |  float]]): matrix (iterable of iterable)
+        id_dict (Dict[Tuple[str, ...], int]): mapping from row id to token
     """
     
     sorted_dict = sorted(id_dict.items(), key=lambda x: x[1])
@@ -320,15 +324,16 @@ def get_nearest_neighbors(matrix: Iterable[Iterable[Union[int, float]]],
                           id_dict: Dict[Tuple[str, ...], int], 
                           topk: int = 10
                           ) -> Dict[Tuple[str, ...], List[Tuple[Tuple[str, ...], float]]]:
-    """_summary_
+    """
+    Get nearest neighbors from matrix containing cosine similarities
 
     Args:
-        matrix (Iterable[Iterable[Union[int, float]]]): _description_
-        id_dict (Dict[Tuple[str, ...], int]): _description_
-        topk (int, optional): _description_. Defaults to 10.
+        matrix (Iterable[Iterable[Union[int, float]]]): dense matrix containing cosine similarities
+        id_dict (Dict[Tuple[str, ...], int]): mapping from row or column id to token
+        topk (int, optional): Number of neighbors to return. Defaults to 10.
 
     Returns:
-        Dict[Tuple[str, ...], List[Tuple[Tuple[str, ...], float]]]: _description_
+        Dict[Tuple[str, ...], List[Tuple[Tuple[str, ...], float]]]: Dictionary containing, for each token, its top neighbors and their cosine similarity
     """
     
     ret = {}
