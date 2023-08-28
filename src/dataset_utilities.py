@@ -130,7 +130,7 @@ def read_RELPRON(filename):
 
 def pprint_dataset(dataset_dict, k=5):
     
-    keys = dataset_dict.keys()[:k]
+    keys = list(dataset_dict.keys())[:k]
     
     for k in keys:
         print(k, "\t", dataset_dict[k])
