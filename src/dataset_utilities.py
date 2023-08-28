@@ -8,13 +8,13 @@ from typing import Dict, Tuple, List, Any
 
 
 def read_WS353(filename: str) -> Dict[Tuple[str, str], float]:
-    """_summary_
+    """Load data for WordSimilarity-353
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[str, str], float]: _description_
+        Dict[Tuple[str, str], float]: dataset dictionary
     """
     
     ret = {}
@@ -35,10 +35,10 @@ def read_SimLex999(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: _description_
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: dataset dictionary
     """
     
     ret = {}
@@ -60,10 +60,10 @@ def read_MEN(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], flo
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: _description_
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: dataset dictionary
     """
     
     ret = {}
@@ -85,10 +85,10 @@ def read_TOEFL(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], i
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[Tuple[str, str], Tuple[str, str]], int]: _description_
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], int]: dataset dictionary
     """
     ret = {}
     
@@ -110,10 +110,10 @@ def read_BLESS(filename: str) -> Dict[Tuple[str, str], str]:
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[str, str], str]: _description_
+        Dict[Tuple[str, str], str]: dataset dictionary
     """
     
     ret = {}
@@ -132,10 +132,10 @@ def read_Pado(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], fl
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: _description_
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: dataset dictionary
     """
     
     ret = {}
@@ -158,10 +158,10 @@ def read_DTFit(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str], Tu
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]], int]: _description_
+        Dict[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]], int]: dataset dictionary
     """
     
     ret = {}
@@ -185,10 +185,10 @@ def read_RELPRON(filename: str) -> Dict[Tuple[str, str, str], List[Tuple[Tuple[s
     """_summary_
 
     Args:
-        filename (str): _description_
+        filename (str): path to file
 
     Returns:
-        Dict[Tuple[str, str, str], List[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]]]]: _description_
+        Dict[Tuple[str, str, str], List[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]]]]: dataset dictionary
     """
     
     ret = collections.defaultdict(list)
@@ -211,17 +211,11 @@ def pprint_dataset(dataset_dict: Dict[Any, Any], k: int = 5) -> None:
     """_summary_
 
     Args:
-        dataset_dict (Dict[Any, Any]): _description_
-        k (int, optional): _description_. Defaults to 5.
+        dataset_dict (Dict[Any, Any]): Dataset dictionary
+        k (int, optional): Number of elements to print. Defaults to 5.
     """
     
     keys = list(dataset_dict.keys())[:k]
     
     for k in keys:
         print(k, "\t", dataset_dict[k])
-    
-
-
-if __name__ == "__main__":
-    ret = read_RELPRON("../datasets/RELPRON/relpron.all")
-    print(ret)
