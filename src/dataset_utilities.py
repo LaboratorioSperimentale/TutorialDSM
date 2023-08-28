@@ -101,7 +101,7 @@ def read_DTFit(filename):
             line = line.strip().split()
             *all, typical, nsubj, root, obj = line
             
-            typical = True if typical == "T" else False
+            typical = 1 if typical == "T" else 0
             w_nsubj, role1 = nsubj.split(":")
             w_root, role2 = root.split(":")
             w_obj, role3 = obj.split(":")
