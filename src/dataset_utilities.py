@@ -128,6 +128,15 @@ def read_RELPRON(filename):
     return ret
 
 
+def pprint_dataset(dataset_dict, k=5):
+    
+    keys = dataset_dict.keys()[:k]
+    
+    for k in keys:
+        print(k, "\t", dataset_dict[k])
+    
+
+
 if __name__ == "__main__":
     ret = read_RELPRON("../datasets/RELPRON/relpron.all")
     print(ret)
