@@ -1,10 +1,25 @@
+"""
+Set of utilities for loading datasets.
+"""
+
 import collections
 
-def read_WS353(filename):
+from typing import Dict, Tuple, List, Any
+
+
+def read_WS353(filename: str) -> Dict[Tuple[str, str], float]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[str, str], float]: _description_
+    """
     
     ret = {}
     
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split()
             
@@ -15,10 +30,20 @@ def read_WS353(filename):
             
     return ret
 
-def read_SimLex999(filename):
+
+def read_SimLex999(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: _description_
+    """
+    
     ret = {}
     
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         fin.readline()
         for line in fin:
             line = line.strip().split()
@@ -31,9 +56,18 @@ def read_SimLex999(filename):
     return ret
 
 
-def read_MEN(filename):
+def read_MEN(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: _description_
+    """
+    
     ret = {}
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split()
             
@@ -47,10 +81,18 @@ def read_MEN(filename):
     return ret
 
 
-def read_TOEFL(filename):
+def read_TOEFL(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], int]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], int]: _description_
+    """
     ret = {}
     
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split()
             
@@ -63,10 +105,20 @@ def read_TOEFL(filename):
             
     return ret
 
-def read_BLESS(filename):
+
+def read_BLESS(filename: str) -> Dict[Tuple[str, str], str]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[str, str], str]: _description_
+    """
+    
     ret = {}
     
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split()
             w1, w2, rel = line
@@ -75,12 +127,20 @@ def read_BLESS(filename):
     
     return ret
 
-def read_Pado(filename):
+
+def read_Pado(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]: _description_
+    """
     
     ret = {}
     
-    
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip()
             
@@ -94,9 +154,19 @@ def read_Pado(filename):
     return ret
 
 
-def read_DTFit(filename):
+def read_DTFit(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]], int]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]], int]: _description_
+    """
+    
     ret = {}
-    with open(filename) as fin:
+    
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split()
             *all, typical, nsubj, root, obj = line
@@ -111,10 +181,19 @@ def read_DTFit(filename):
     return ret
 
 
-def read_RELPRON(filename):
+def read_RELPRON(filename: str) -> Dict[Tuple[str, str, str], List[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]]]]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Dict[Tuple[str, str, str], List[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]]]]: _description_
+    """
+    
     ret = collections.defaultdict(list)
     
-    with open(filename) as fin:
+    with  open(filename, encoding="utf-8") as fin:
         for line in fin:
             line = line.strip().split()
             role, target, headN, _, w1, w2 = line
@@ -128,7 +207,13 @@ def read_RELPRON(filename):
     return ret
 
 
-def pprint_dataset(dataset_dict, k=5):
+def pprint_dataset(dataset_dict: Dict[Any, Any], k: int = 5) -> None:
+    """_summary_
+
+    Args:
+        dataset_dict (Dict[Any, Any]): _description_
+        k (int, optional): _description_. Defaults to 5.
+    """
     
     keys = list(dataset_dict.keys())[:k]
     
