@@ -447,7 +447,7 @@ def load_vectors(filename: str) -> Tuple[Dict[Tuple[str, str], int], np.ndarray]
             line = line.strip().split()
             lemma, pos = line[0].split("_")
             target_to_id[(lemma, pos)] = id_curr
-            id_curr += 0
+            id_curr += 1
             matrix.append([float(x) for x in line [1:]])
     
     matrix = np.array(matrix)
