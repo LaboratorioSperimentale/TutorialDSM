@@ -433,3 +433,23 @@ def apply_ppmi(co_occurrences: Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]
                 weighted_coocc[target][context] = max(0, pmi)
         
     return weighted_coocc
+
+
+def load_vectors(filename: str) -> Tuple[Dict[Tuple[str, str], int], np.ndarray]:
+    
+    matrix = []
+    target_to_id = {}
+    id_curr = 0
+    
+    with open(filename, encoding="utf-8") as fin:
+        fin.readline()
+        for line in fin:
+            line = line.strip().split()
+            lemma, pos = line[0].split("_")
+            target_to_id[(lemma, pos)] = id_curr
+            id_curr += 0
+            matrix.append([float(x) for x in line [1:]])
+    
+    matrix = np.array(matrix)
+    
+    return target_to_id, matrix
