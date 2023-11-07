@@ -253,7 +253,11 @@ def build_sparse_matrix(filename: str,
 
     Args:
         filename (str): path to file containing matrix entries
-        token_shape (Tuple[str, ...]): token representation used to load tokens from file
+        token_shape (Tuple[str, ...]): tuple containing the info that we want to retain for each token.
+            Possible values for 'token_shape' are:
+            "s_id", "form", "lemma", "pos", "pos_fgrained",
+            "morph", "synhead", "synrel",
+            "_", "_", "mwe", "mwe2" 
         nrows (int): number of rows
         ncols (int): number of columns
         sep (str, optional): separator used to parse file into tokens. Defaults to '\t'.
@@ -356,17 +360,23 @@ def extract_cooccurrences(filepath: str,
                           contexts: Union[Dict, Set, List], 
                           window_size: int = 5
                           ) -> Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]:
-    """_summary_
+    """Extracts co-occurrences between given targets and contexts (given as parameters)
 
     Args:
-        filepath (str): _description_
-        token_shape (Tuple[str, ...]): _description_
-        targets (Union[Dict, Set, List]): _description_
-        contexts (Union[Dict, Set, List]): _description_
-        window_size (int, optional): _description_. Defaults to 5.
+        filepath (str): path to file containing data (i.e., corpora)
+        token_shape (Tuple[str, ...]): tuple containing the info that we want to retain for each token.
+            Possible values for 'token_shape' are:
+            "s_id", "form", "lemma", "pos", "pos_fgrained",
+            "morph", "synhead", "synrel",
+            "_", "_", "mwe", "mwe2"
+        targets (Union[Dict, Set, List]): data structure containing list of lexemes to be considered as targets
+        contexts (Union[Dict, Set, List]): data structure containing list of lexemes to be considered as contexts
+        window_size (int, optional): size of context to be considered. 
+            Note, the window is considered both to the left and to the right of the target.
+            Defaults to 5.
 
     Returns:
-        Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]: _description_
+        Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]: Dictionary of co-occurrences
     """
 
     co_occ = collections.defaultdict(lambda: collections.defaultdict(int))
@@ -436,6 +446,14 @@ def apply_ppmi(co_occurrences: Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]
 
 
 def load_vectors(filename: str) -> Tuple[Dict[Tuple[str, str], int], np.ndarray]:
+    """_summary_
+
+    Args:
+        filename (str): _description_
+
+    Returns:
+        Tuple[Dict[Tuple[str, str], int], np.ndarray]: _description_
+    """
     
     matrix = []
     target_to_id = {}
