@@ -8,7 +8,15 @@ from typing import Dict, Tuple, List, Any
 
 
 def read_WS353(filename: str) -> Dict[Tuple[str, str], float]:
-    """Load data for WordSimilarity-353
+    """Load data for WordSimilarity-353.
+    
+    Data is expected in the following format:
+        [LEXEME1]   [LEXEME2]   [SCORE]
+        tiger	cat	7.35
+        tiger	tiger	10.00
+        plane	car	5.77
+        train	car	6.31
+        television	radio	6.77
 
     Args:
         filename (str): path to file
@@ -32,7 +40,16 @@ def read_WS353(filename: str) -> Dict[Tuple[str, str], float]:
 
 
 def read_SimLex999(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]:
-    """_summary_
+    """Load data for SimLex-999.
+    
+    Data is expected in the following format:
+        [LEXEME1]   [LEXEME2]   [PoS]   [SCORE] [...]
+        old	new	A	1.58    ...
+        smart	intelligent	A	9.2 ...
+        hard	difficult	A	8.77    ...
+        happy	cheerful	A	9.55    ...
+        hard	easy	A	0.95    ...
+        fast	rapid	A	8.75    ...
 
     Args:
         filename (str): path to file
@@ -57,7 +74,16 @@ def read_SimLex999(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]
 
 
 def read_MEN(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]:
-    """_summary_
+    """Load data for MEN.
+    
+    Data is expected in the following format:
+        [LEXEME1-PoS]   [LEXEME2-PoS]   [SCORE]
+        sun-n sunlight-n 50.000000
+        automobile-n car-n 50.000000
+        river-n water-n 49.000000
+        stair-n staircase-n 49.000000
+        morning-n sunrise-n 49.000000
+    
 
     Args:
         filename (str): path to file
@@ -82,7 +108,18 @@ def read_MEN(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], flo
 
 
 def read_TOEFL(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], int]:
-    """_summary_
+    """Load data for TOEFL.
+    
+    Data is expected in the following format:
+        [QuestionID]   [LEXEME1-PoS]   [LEXEME2-PoS]    [TRUE/FALSE]
+        1	enormous-j	appropriate-j	FALSE
+        1	enormous-j	unique-j	FALSE
+        1	enormous-j	tremendous-j	TRUE
+        1	enormous-j	decidedly-r	FALSE
+        2	provision-n	stipulation-n	TRUE
+        2	provision-n	interrelation-n	FALSE
+        2	provision-n	jurisdiction-n	FALSE
+        2	provision-n	interpretation-n	FALSE
 
     Args:
         filename (str): path to file
@@ -107,7 +144,15 @@ def read_TOEFL(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], i
 
 
 def read_BLESS(filename: str) -> Dict[Tuple[str, str], str]:
-    """_summary_
+    """Load data for BLESS.
+   
+    Data is expected in the following format:
+        [LEXEME1]   [LEXEME2]   [LABEL]
+        alligator	aggressive	attri
+        alligator	crocodile	coord
+        alligator	chase	event
+        alligator	carnivore	hyper
+        alligator	mouth	mero    
 
     Args:
         filename (str): path to file
@@ -129,7 +174,16 @@ def read_BLESS(filename: str) -> Dict[Tuple[str, str], str]:
 
 
 def read_Pado(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], float]:
-    """_summary_
+    """Load data for Pado-plausibility.
+
+    Data is expected in the following format:
+        [LEXEME1]   [LEXEME2]   [ARG0/ARG1] [SCORE]
+        advise	banker	ARG0	6.0
+        advise	banker	ARG1	5.0  
+        advise	biologist	ARG0	4.2
+        advise	biologist	ARG1	5.0      
+        advise	business	ARG0	5.3
+        advise	business	ARG1	5.8
 
     Args:
         filename (str): path to file
@@ -155,7 +209,15 @@ def read_Pado(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str]], fl
 
 
 def read_DTFit(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]], int]:
-    """_summary_
+    """Load data for DTFit.
+    
+    Data is expected in the following format:
+        [...]   [T/AT]  [LEXEME1:nsubj LEXEME2:root LEXEME3:obj]  
+        ...	AT	actor:nsubj win:root battle:obj 
+        ...	T	actor:nsubj win:root award:obj 
+        ...	AT	anchorman:nsubj tell:root parable:obj 
+        ...	T	anchorman:nsubj tell:root news:obj 
+        ...	AT	animal:nsubj find:root map:obj 
 
     Args:
         filename (str): path to file
@@ -182,7 +244,16 @@ def read_DTFit(filename: str) -> Dict[Tuple[Tuple[str, str], Tuple[str, str], Tu
 
 
 def read_RELPRON(filename: str) -> Dict[Tuple[str, str, str], List[Tuple[Tuple[str, str], Tuple[str, str], Tuple[str, str]]]]:
-    """_summary_
+    """Load data for RELPRON.
+    
+    Data is expected in the following format:
+        [OBJ/SBJ]   [LEXEME1_PoS:]  [that]    [LEXEME2_PoS]  [LEXEME3_PoS]  
+        OBJ garrison_N: organization_N that army_N install_V
+        OBJ garrison_N: organization_N that fort_N house_V
+        OBJ garrison_N: organization_N that barracks_N hold_V 
+        SBJ garrison_N: organization_N that defend_V castle_N 
+        SBJ garrison_N: organization_N that hold_V city_N  
+    
 
     Args:
         filename (str): path to file
@@ -208,7 +279,7 @@ def read_RELPRON(filename: str) -> Dict[Tuple[str, str, str], List[Tuple[Tuple[s
 
 
 def pprint_dataset(dataset_dict: Dict[Any, Any], k: int = 5) -> None:
-    """_summary_
+    """Prints dataset one entry per line.
 
     Args:
         dataset_dict (Dict[Any, Any]): Dataset dictionary
