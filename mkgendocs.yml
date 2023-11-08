@@ -17,3 +17,16 @@ pages:
       - get_nearest_neighbors
       - extract_cooccurrences
       - apply_ppmi
+      - load_vectors
+  - page: "readme.md"
+    source: "src/dataset_utilities.py"
+    functions:
+      - read_WS353
+      - read_SimLex999
+      - read_MEN
+      - read_TOEFL
+      - read_BLESS
+      - read_Pado
+      - read_DTFit
+      - read_RELPRON
+      - pprint_dataset
