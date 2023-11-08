@@ -413,16 +413,16 @@ def apply_ppmi(co_occurrences: Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]
                contexts_frequencies_dict: Dict[Tuple[str, ...], int], 
                corpus_size: int
                ) -> Dict[Tuple[str, ...], Dict[Tuple[str, ...], float]]:
-    """_summary_
+    """Apply PPMI (Positive Pointwise Mutual Information) to a dictionary registering co-occurrences.
 
     Args:
-        co_occurrences (Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]): _description_
-        targets_frequencies_dict (Dict[Tuple[str, ...], int]): _description_
-        contexts_frequencies_dict (Dict[Tuple[str, ...], int]): _description_
-        corpus_size (int): _description_
+        co_occurrences (Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]): Dictionary of co-occurrences
+        targets_frequencies_dict (Dict[Tuple[str, ...], int]): Dictionary of frequencies for target items
+        contexts_frequencies_dict (Dict[Tuple[str, ...], int]): Dictionary of frequencies for context items
+        corpus_size (int): Overall size of corpus.
 
     Returns:
-        Dict[Tuple[str, ...], Dict[Tuple[str, ...], float]]: _description_
+        Dict[Tuple[str, ...], Dict[Tuple[str, ...], float]]: Weighted matrix.
     """
 
     weighted_coocc = collections.defaultdict(lambda: collections.defaultdict(int))
@@ -446,13 +446,19 @@ def apply_ppmi(co_occurrences: Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]
 
 
 def load_vectors(filename: str) -> Tuple[Dict[Tuple[str, str], int], np.ndarray]:
-    """_summary_
+    """Load vectors from file.
+    
+    The file is expected to be formatted with one vector per line (the first line contains the overall dimension of the matrix), as follows:
+        163473 300
+        say_VERB -0.008861 0.097097 0.100236 0.070044 -0.079279 0.000923 -0.012829 0.064301 ...
+        go_VERB 0.010490 0.094733 0.143699 0.040344 -0.103710 -0.000016 -0.014351 0.019653 ...
+        make_VERB -0.013029 0.038892 0.008581 0.056925 -0.100181 0.011566 -0.072478 0.156239 ...
 
     Args:
-        filename (str): _description_
+        filename (str): path to txt file containing vectors.
 
     Returns:
-        Tuple[Dict[Tuple[str, str], int], np.ndarray]: _description_
+        Tuple[Dict[Tuple[str, str], int], np.ndarray]: Dictionary containing with lexemes as indexes and vectors as values.
     """
     
     matrix = []
