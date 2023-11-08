@@ -196,7 +196,11 @@ _summary_
 **Args**
 
 * **filename** (str) : path to file containing matrix entries
-* **token_shape** (Tuple[str, ...]) : token representation used to load tokens from file
+* **token_shape** (Tuple[str, ...]) : tuple containing the info that we want to retain for each token.
+    Possible values for 'token_shape' are:
+    "s_id", "form", "lemma", "pos", "pos_fgrained",
+    "morph", "synhead", "synrel",
+    "_", "_", "mwe", "mwe2" 
 * **nrows** (int) : number of rows
 * **ncols** (int) : number of columns
 * **sep** (str, optional) : separator used to parse file into tokens. Defaults to '    '.
@@ -211,7 +215,7 @@ _summary_
 
 
 ### write_to_file
-[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L301)
+[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L305)
 ```python
 .write_to_file(
    filepath: str, matrix: Iterable[Iterable[Union[int, float]]],
@@ -234,7 +238,7 @@ Serialize vectors to file
 
 
 ### get_nearest_neighbors
-[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L323)
+[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L327)
 ```python
 .get_nearest_neighbors(
    matrix: Iterable[Iterable[Union[int, float]]], id_dict: Dict[Tuple[str, ...],
@@ -262,7 +266,7 @@ Get nearest neighbors from matrix containing cosine similarities
 
 
 ### extract_cooccurrences
-[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L353)
+[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L357)
 ```python
 .extract_cooccurrences(
    filepath: str, token_shape: Tuple[str, ...], targets: Union[Dict, Set, List],
@@ -271,28 +275,34 @@ Get nearest neighbors from matrix containing cosine similarities
 ```
 
 ---
-_summary_
+Extracts co-occurrences between given targets and contexts (given as parameters)
 
 
 **Args**
 
-* **filepath** (str) : _description_
-* **token_shape** (Tuple[str, ...]) : _description_
-* **targets** (Union[Dict, Set, List]) : _description_
-* **contexts** (Union[Dict, Set, List]) : _description_
-* **window_size** (int, optional) : _description_. Defaults to 5.
+* **filepath** (str) : path to file containing data (i.e., corpora)
+* **token_shape** (Tuple[str, ...]) : tuple containing the info that we want to retain for each token.
+    Possible values for 'token_shape' are:
+    "s_id", "form", "lemma", "pos", "pos_fgrained",
+    "morph", "synhead", "synrel",
+    "_", "_", "mwe", "mwe2"
+* **targets** (Union[Dict, Set, List]) : data structure containing list of lexemes to be considered as targets
+* **contexts** (Union[Dict, Set, List]) : data structure containing list of lexemes to be considered as contexts
+* **window_size** (int, optional) : size of context to be considered. 
+    Note, the window is considered both to the left and to the right of the target.
+    Defaults to 5.
 
 
 **Returns**
 
-* _description_
+* Dictionary of co-occurrences
 
 
 ----
 
 
 ### apply_ppmi
-[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L401)
+[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L411)
 ```python
 .apply_ppmi(
    co_occurrences: Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]],
@@ -302,18 +312,49 @@ _summary_
 ```
 
 ---
-_summary_
+Apply PPMI (Positive Pointwise Mutual Information) to a dictionary registering co-occurrences.
 
 
 **Args**
 
-* **co_occurrences** (Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]) : _description_
-* **targets_frequencies_dict** (Dict[Tuple[str, ...], int]) : _description_
-* **contexts_frequencies_dict** (Dict[Tuple[str, ...], int]) : _description_
-* **corpus_size** (int) : _description_
+* **co_occurrences** (Dict[Tuple[str, ...], Dict[Tuple[str, ...], int]]) : Dictionary of co-occurrences
+* **targets_frequencies_dict** (Dict[Tuple[str, ...], int]) : Dictionary of frequencies for target items
+* **contexts_frequencies_dict** (Dict[Tuple[str, ...], int]) : Dictionary of frequencies for context items
+* **corpus_size** (int) : Overall size of corpus.
 
 
 **Returns**
 
-* _description_
+* Weighted matrix.
+
+
+----
+
+
+### load_vectors
+[source](https://github.com/LaboratorioSperimentale/TutorialDSM/blob/main/src/dsmagic.py/#L448)
+```python
+.load_vectors(
+   filename: str
+)
+```
+
+---
+Load vectors from file.
+
+The file is expected to be formatted with one vector per line (the first line contains the overall dimension of the matrix), as follows:
+163473 300
+say_VERB -0.008861 0.097097 0.100236 0.070044 -0.079279 0.000923 -0.012829 0.064301 ...
+go_VERB 0.010490 0.094733 0.143699 0.040344 -0.103710 -0.000016 -0.014351 0.019653 ...
+make_VERB -0.013029 0.038892 0.008581 0.056925 -0.100181 0.011566 -0.072478 0.156239 ...
+
+
+**Args**
+
+* **filename** (str) : path to txt file containing vectors.
+
+
+**Returns**
+
+* Dictionary containing with lexemes as indexes and vectors as values.
 
